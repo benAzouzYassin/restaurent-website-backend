@@ -1,8 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 
 const ItemSchema = new Schema({
-  availabe: { type: Boolean, required: true },
-  price: { type: String, required: true },
+  itemName: { type: String, required: true },
+  isAvailable: { type: Boolean, required: true },
+  price: { type: mongoose.Types.Decimal128, required: true },
   rating: { type: Number, required: false },
   imgLink: { type: String, required: true },
 });

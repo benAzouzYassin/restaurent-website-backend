@@ -13,7 +13,7 @@ async function saveUser(password: string, userName: string, phone: string) {
     password: hashedPass,
     phone: phone,
   });
-  const payload = { name: user.name, isAdmin: user.isAdmin };
+  const payload = { name: user.name, isAdmin: user.isAdmin, id: user.id };
   const token = generateToken(payload);
   return token;
 }

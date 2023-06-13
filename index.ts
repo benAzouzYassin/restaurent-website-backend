@@ -3,13 +3,17 @@ import { errorHandler } from "./middleware/errorHandler";
 import cors from "cors";
 import { dbConnect } from "./config/db";
 import { authRouter } from "./routes/authRoutes";
-import bodyparser from "body-parser";
-import { adminProtection } from "./middleware/adminProtection";
+import bodyParser from "body-parser";
 import { adminRouter } from "./routes/admin";
 import { itemsRouter } from "./routes/itemsRoutes";
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
+import { swaggerUiOptions } from "./swaggerUiConfig";
+import { orderRouter } from "./routes/ordersRoutes";
+
 const app = express();
 const port = 5500;
-app.use(bodyparser.json());
+app.use(bodyParser.json());
 app.use(cors());
 
 dbConnect();
@@ -21,8 +25,14 @@ app.get("/", async (req, res) => {
 //routes
 app.use("/", authRouter);
 app.use("/", itemsRouter);
-app.use("/", adminProtection, adminRouter);
+app.use("/", adminRouter);
+app.use("/", orderRouter);
 //
 app.use(errorHandler);
+
+//adding documentations
+
+const specs = swaggerJsdoc(swaggerUiOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.listen(port);
 console.log(`app is live on port ${port}`);

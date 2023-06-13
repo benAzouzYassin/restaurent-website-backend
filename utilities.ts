@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 interface Payload {
   name: string;
   isAdmin: boolean;
+  id: string;
 }
 
 export function generateToken(payload: Payload) {

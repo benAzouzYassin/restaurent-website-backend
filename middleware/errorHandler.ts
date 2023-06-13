@@ -8,7 +8,8 @@ export function errorHandler(
   next: NextFunction
 ) {
   try {
-    res.json({
+    console.log(err.message);
+    res.status(500).json({
       code: res.statusCode,
       message: err.message,
       errStack: process.env.NODE_ENV == "dev" ? err.stack : null,

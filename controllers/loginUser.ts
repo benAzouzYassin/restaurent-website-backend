@@ -33,6 +33,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
             const token = generateToken({
               name: req.body.name,
               isAdmin: users[i].isAdmin,
+              id: users[i].id,
             });
             results = {
               success: true,
