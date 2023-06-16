@@ -7,22 +7,64 @@ import { ItemModel } from "../models/item";
 import { UserModel } from "../models/user";
 
 export const createOrder = asyncHandler(async (req, res) => {
-  const isValid = await validateBody(req);
+  const { isValid, message: errorMsg } = await validateBody(req);
   if (!isValid) {
-    throw new HttpExpectation(
-      res,
-      "BAD_REQUEST",
-      "non valid itemId or userId or orderState"
-    );
+    throw new HttpExpectation(res, "BAD_REQUEST", errorMsg);
   } else {
     const order = await OrderModel.create({
       item: req.body.itemId,
       user: req.body.userId,
       orderState: req.body.orderState,
+      countInCart: req.body.countInCart,
     });
-    res.send({ success: true, message: "order was created successfully" });
+    res.send({
+      success: true,
+      message: "order was created successfully",
+      order: order,
+    });
   }
 });
+
+//validate the body for the newly created order
+async function validateBody(req: Request) {
+  const { body } = req;
+  if (!["pending", "done", "canceled"].includes(body.orderState)) {
+    return {
+      isValid: false,
+      message: "orderState should be in ['pending', 'done', 'canceled'] ",
+    };
+  }
+  if (
+    isNaN(body.countInCart) ||
+    body.countInCart < 1 ||
+    body.countInCart > 100
+  ) {
+    return {
+      isValid: false,
+      message: "countInCart should be a number between 1 and 100 ",
+    };
+  }
+  if (!isValidObjectId(body.itemId) || !isValidObjectId(body.userId)) {
+    return {
+      isValid: false,
+      message: "itemId and userId should be valid",
+    };
+  }
+  try {
+    const item = await ItemModel.findById(body.itemId);
+    const user = await UserModel.findById(body.userId);
+    if (item && user) {
+      return { isValid: true, message: "" };
+    } else {
+      return {
+        isValid: false,
+        message: "item or user does not exist",
+      };
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
 
 export const userOrders = asyncHandler(async (req, res) => {
   try {
@@ -36,26 +78,17 @@ export const userOrders = asyncHandler(async (req, res) => {
   }
 });
 
-//validate the body for the newly created order
-async function validateBody(req: Request) {
+//TODO : finish this or delete it
+export const updateCount = asyncHandler(async (req, res) => {
   const { body } = req;
-  if (!["pending", "done", "canceled"].includes(body.orderState)) {
-    return false;
+  if (!body.orderId || !isValidObjectId(body.orderId)) {
+    throw new HttpExpectation(res, "BAD_REQUEST", "non valid orderId");
   }
 
-  if (!isValidObjectId(body.itemId) || !isValidObjectId(body.userId)) {
-    return false;
+  if (isNaN(body.newCount) || body.newCount < 0 || body.newCount > 100) {
+    throw new HttpExpectation(res, "BAD_REQUEST", "non valid newCount");
   }
+
   try {
-    const item = await ItemModel.findById(body.itemId);
-    const user = await UserModel.findById(body.userId);
-    if (item && user) {
-      return true;
-    } else {
-      console.log(item, user);
-      return false;
-    }
-  } catch (error) {
-    throw new Error(error.message);
-  }
-}
+  } catch (error) {}
+});
