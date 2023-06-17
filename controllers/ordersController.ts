@@ -13,7 +13,7 @@ export const createOrder = asyncHandler(async (req, res) => {
   } else {
     const order = await OrderModel.create({
       item: req.body.itemId,
-      user: req.body.userId,
+      user: req["user"].id,
       orderState: req.body.orderState,
       countInCart: req.body.countInCart,
     });
@@ -44,7 +44,7 @@ async function validateBody(req: Request) {
       message: "countInCart should be a number between 1 and 100 ",
     };
   }
-  if (!isValidObjectId(body.itemId) || !isValidObjectId(body.userId)) {
+  if (!isValidObjectId(body.itemId)) {
     return {
       isValid: false,
       message: "itemId and userId should be valid",
@@ -52,7 +52,7 @@ async function validateBody(req: Request) {
   }
   try {
     const item = await ItemModel.findById(body.itemId);
-    const user = await UserModel.findById(body.userId);
+    const user = await UserModel.findById(req["user"].id);
     if (item && user) {
       return { isValid: true, message: "" };
     } else {
@@ -78,9 +78,9 @@ export const userOrders = asyncHandler(async (req, res) => {
   }
 });
 
-//TODO : finish this or delete it
 export const updateCount = asyncHandler(async (req, res) => {
   const { body } = req;
+  console.log("this the body ", req.body);
   if (!body.orderId || !isValidObjectId(body.orderId)) {
     throw new HttpExpectation(res, "BAD_REQUEST", "non valid orderId");
   }
@@ -90,5 +90,39 @@ export const updateCount = asyncHandler(async (req, res) => {
   }
 
   try {
-  } catch (error) {}
+    const updated = await OrderModel.findByIdAndUpdate(body.orderId, {
+      countInCart: body.newCount,
+    });
+    res.send({ success: true, message: "updated succesfully", p: updated });
+  } catch (error) {
+    throw new HttpExpectation(res, "INTERNAL_SERVER_ERROR", error.message);
+  }
+});
+
+export const updateState = asyncHandler(async (req, res) => {
+  const { body } = req;
+  // console.log("this the body ", req.body);
+  if (!body.orderId || !isValidObjectId(body.orderId)) {
+    throw new HttpExpectation(res, "BAD_REQUEST", "non valid orderId");
+  }
+  const validation =
+    ["pending", "canceled", "done"].indexOf(body.newState) === -1
+      ? false
+      : true;
+  if (!validation) {
+    throw new HttpExpectation(
+      res,
+      "BAD_REQUEST",
+      "newState should be one of this [pending,canceled,done]"
+    );
+  }
+
+  try {
+    const updated = await OrderModel.findByIdAndUpdate(body.orderId, {
+      orderState: body.newState,
+    });
+    res.send({ success: true, message: "updated succesfully", p: updated });
+  } catch (error) {
+    throw new HttpExpectation(res, "INTERNAL_SERVER_ERROR", error.message);
+  }
 });

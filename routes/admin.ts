@@ -1,12 +1,15 @@
 import { Router } from "express";
 import { adminController } from "../controllers/admin";
 import { adminProtection } from "../middleware/adminProtection";
-import { addItem } from "../controllers/getImgController";
+import { getImgLink } from "../controllers/getImgController";
 import multer from "multer";
+import { createItem } from "../controllers/itemsController";
+import { updateState } from "../controllers/ordersController";
 export const adminRouter = Router();
 
 adminRouter.post("/admin", adminProtection, adminController);
 
+///uploading img and sending the link
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
@@ -15,15 +18,20 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + " " + file.originalname);
   },
 });
-
 const upload = multer({ storage: storage });
 
-adminRouter.post("/addItem", upload.single("img"), addItem);
+adminRouter.post(
+  "/getImgLink",
+  adminProtection,
+  upload.single("img"),
+  getImgLink
+);
+
+adminRouter.post("/saveItem", adminProtection, createItem);
 
 //TODO : get pending orders
 
-//TODO : update order state
-
+adminRouter.patch("/order/updateState", adminProtection, updateState);
 //TODO : get done orders for the month
 
 //TODO : get the canceled orders for the month

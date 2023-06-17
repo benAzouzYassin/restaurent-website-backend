@@ -5,7 +5,7 @@ import { ItemModel } from "../models/item";
 
 export const getAll = asyncHandler(async (req: Request, res: Response) => {
   try {
-    const items = await ItemModel.find({}, "-_id -__v");
+    const items = await ItemModel.find({}, "-__v");
     res.json(items);
   } catch (error) {
     console.log(error.message, "itemsController.ts line 11 ");
@@ -15,10 +15,7 @@ export const getAll = asyncHandler(async (req: Request, res: Response) => {
 
 export const getItem = asyncHandler(async (req: Request, res: Response) => {
   try {
-    const item = await ItemModel.findOne(
-      { itemName: req.params.name },
-      "-_id -__v"
-    );
+    const item = await ItemModel.findOne({ itemName: req.params.name }, "-__v");
     if (item) {
       res.json(item);
     } else {
@@ -34,18 +31,30 @@ export const createItem = asyncHandler(async (req: Request, res: Response) => {
   validateBody(req, res);
 
   const { isAvailable, price, rating, imgLink, itemName } = req.body;
-
   try {
-    const item = await ItemModel.create({
-      itemName: itemName,
-      isAvailable: isAvailable,
-      price: price,
-      rating: rating,
-      imgLink: imgLink,
+    const imgUrl =
+      "http://" +
+      req.body.imgLink
+        .split("")
+        .map((char: string) => {
+          if (char === "\\") {
+            return "/";
+          } else if (char == " ") {
+            return "%20";
+          } else {
+            return char;
+          }
+        })
+        .join("");
+
+    const newItem = await ItemModel.create({
+      ...req.body,
+      imgLink: imgUrl,
+      ingredients: req.body.ingredients.split("-"),
     });
-    res.json(item);
+    res.send(newItem);
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
     throw new HttpExpectation(res, "INTERNAL_SERVER_ERROR");
   }
 });
@@ -83,16 +92,23 @@ export const deleteItem = asyncHandler(async (req: Request, res: Response) => {
 function validateBody(req: Request, res: Response) {
   const { body } = req;
   //verify existence
-  if (!body || !body.itemName || !body.price || !body.rating || !body.imgLink) {
+  if (
+    !body ||
+    !body.ingredients ||
+    !body.itemName ||
+    !body.price ||
+    !body.rating ||
+    !body.imgLink
+  ) {
     throw new HttpExpectation(
       res,
       "BAD_REQUEST",
-      "the body should contain {itemName:string, price:number(decimal), rating:number, imgLink:string}"
+      "the body should contain {itemName:string, ingredients: string[], price:number(decimal), rating:number, imgLink:string}"
     );
   }
 
   // verify types
-  if (typeof body.isAvailable != "boolean") {
+  if (body.isAvailable != "true" && body.isAvailable != "false") {
     throw new HttpExpectation(
       res,
       "BAD_REQUEST",

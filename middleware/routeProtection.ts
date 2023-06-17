@@ -11,6 +11,7 @@ export function protect(req: Request, res: Response, next: NextFunction) {
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     req["user"] = payload;
+
     next();
   } catch (error) {
     throw new HttpExpectation(res, "UNAUTHORIZED");
