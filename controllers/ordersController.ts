@@ -66,39 +66,6 @@ async function validateBody(req: Request) {
   }
 }
 
-export const userOrders = asyncHandler(async (req, res) => {
-  try {
-    const orders = await OrderModel.find({
-      user: req.params.userId,
-    }).populate("item");
-    const items = orders.map((order) => order.item);
-    res.json({ success: true, data: items });
-  } catch (error) {
-    throw new Error(error.message);
-  }
-});
-
-export const updateCount = asyncHandler(async (req, res) => {
-  const { body } = req;
-  console.log("this the body ", req.body);
-  if (!body.orderId || !isValidObjectId(body.orderId)) {
-    throw new HttpExpectation(res, "BAD_REQUEST", "non valid orderId");
-  }
-
-  if (isNaN(body.newCount) || body.newCount < 0 || body.newCount > 100) {
-    throw new HttpExpectation(res, "BAD_REQUEST", "non valid newCount");
-  }
-
-  try {
-    const updated = await OrderModel.findByIdAndUpdate(body.orderId, {
-      countInCart: body.newCount,
-    });
-    res.send({ success: true, message: "updated succesfully", p: updated });
-  } catch (error) {
-    throw new HttpExpectation(res, "INTERNAL_SERVER_ERROR", error.message);
-  }
-});
-
 export const updateState = asyncHandler(async (req, res) => {
   const { body } = req;
   // console.log("this the body ", req.body);
@@ -124,5 +91,17 @@ export const updateState = asyncHandler(async (req, res) => {
     res.send({ success: true, message: "updated succesfully", p: updated });
   } catch (error) {
     throw new HttpExpectation(res, "INTERNAL_SERVER_ERROR", error.message);
+  }
+});
+
+export const userOrders = asyncHandler(async (req, res) => {
+  try {
+    const userOrders = await OrderModel.find({
+      user: req["user"].id,
+      orderState: "pending" || "canceled",
+    }).populate("item");
+    res.send(userOrders);
+  } catch (err) {
+    throw new HttpExpectation(res, "BAD_REQUEST", err.message);
   }
 });

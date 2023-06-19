@@ -1,13 +1,17 @@
 import { Router } from "express";
-import { adminController } from "../controllers/admin";
+import {
+  cancelOrder,
+  confirmOrder,
+  getCanceledOrders,
+  getDoneOrders,
+  getPending,
+} from "../controllers/admin";
 import { adminProtection } from "../middleware/adminProtection";
 import { getImgLink } from "../controllers/getImgController";
 import multer from "multer";
 import { createItem } from "../controllers/itemsController";
 import { updateState } from "../controllers/ordersController";
 export const adminRouter = Router();
-
-adminRouter.post("/admin", adminProtection, adminController);
 
 ///uploading img and sending the link
 const storage = multer.diskStorage({
@@ -29,11 +33,9 @@ adminRouter.post(
 
 adminRouter.post("/saveItem", adminProtection, createItem);
 
-//TODO : get pending orders
-
 adminRouter.patch("/order/updateState", adminProtection, updateState);
-//TODO : get done orders for the month
-
-//TODO : get the canceled orders for the month
-
-//TODO : get all month orders
+adminRouter.get("/pendingOrders", adminProtection, getPending);
+adminRouter.patch("/cancelOrder", adminProtection, cancelOrder);
+adminRouter.patch("/confirmOrder", adminProtection, confirmOrder);
+adminRouter.get("/doneOrders", adminProtection, getDoneOrders);
+adminRouter.get("/canceledOrders", adminProtection, getCanceledOrders);

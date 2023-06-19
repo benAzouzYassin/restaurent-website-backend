@@ -10,9 +10,12 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 import { swaggerUiOptions } from "./swaggerUiConfig";
 import { orderRouter } from "./routes/ordersRoutes";
+import { userRouter } from "./routes/user";
 
 const app = express();
 const port = 5500;
+
+//configs
 app.use(bodyParser.json());
 app.use(cors());
 app.use("/uploads", express.static("uploads"));
@@ -27,6 +30,7 @@ app.use("/", authRouter);
 app.use("/", itemsRouter);
 app.use("/", adminRouter);
 app.use("/", orderRouter);
+app.use("/", userRouter);
 //
 app.use(errorHandler);
 

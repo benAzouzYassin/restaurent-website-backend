@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs";
 import { HttpExpectation } from "../http expectations/HttpExpectations";
 import { generateToken } from "../utilities";
 import asyncHandler from "express-async-handler";
-//TODO : clean and refactor the code
 
 interface UserData {
   userName: string;
