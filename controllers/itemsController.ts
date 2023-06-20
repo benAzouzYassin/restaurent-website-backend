@@ -52,7 +52,7 @@ export const createItem = asyncHandler(async (req: Request, res: Response) => {
       imgLink: imgUrl,
       ingredients: req.body.ingredients.split("-"),
     });
-    res.send(newItem);
+    res.status(201).send(newItem);
   } catch (error) {
     console.error(error.message);
     throw new HttpExpectation(res, "INTERNAL_SERVER_ERROR");

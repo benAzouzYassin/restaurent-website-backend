@@ -30,7 +30,7 @@ adminRouter.post(
   upload.single("img"),
   getImgLink
 );
-
+adminRouter.post("/admin", adminProtection, (req, res) => res.send(true));
 adminRouter.post("/saveItem", adminProtection, createItem);
 
 adminRouter.patch("/order/updateState", adminProtection, updateState);
