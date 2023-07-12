@@ -48,12 +48,10 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
           throw new HttpExpectation(res, "UNAUTHORIZED");
         }
       } else {
-        console.log("unotherized");
         throw new HttpExpectation(res, "UNAUTHORIZED");
       }
     } catch (err) {}
   } else {
-    console.log("bad req");
     throw new HttpExpectation(res, "BAD_REQUEST");
   }
 });

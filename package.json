@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "rimraf dist && npx tsc",
-    "prestart": "npm run build",
-    "start": "tsc ./index.ts && nodemon ./dist/index.js",
+    "start": "ts-node index.ts",
     "predev": "npm run build",
-    "dev": "concurrently \"npx tsc -w\"  \"nodemon dist/index.js\""
+    "dev": "concurrently \"npx tsc -w\"  \"nodemon dist/index.js\"",
+    "vercel-build": "echo building"
   },
   "author": "",
   "license": "ISC",
@@ -20,12 +20,10 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
-    "googleapis": "^118.0.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.2.2",
     "multer": "^1.4.5-lts.1",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^4.6.3"
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",

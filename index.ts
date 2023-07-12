@@ -6,14 +6,12 @@ import { authRouter } from "./routes/authRoutes";
 import bodyParser from "body-parser";
 import { adminRouter } from "./routes/admin";
 import { itemsRouter } from "./routes/itemsRoutes";
-import swaggerUi from "swagger-ui-express";
-import swaggerJsdoc from "swagger-jsdoc";
-import { swaggerUiOptions } from "./swaggerUiConfig";
+
 import { orderRouter } from "./routes/ordersRoutes";
 import { userRouter } from "./routes/user";
 
 const app = express();
-const port = 5500;
+const port = 3000;
 
 //configs
 app.use(bodyParser.json());
@@ -36,7 +34,6 @@ app.use(errorHandler);
 
 //adding documentations
 
-const specs = swaggerJsdoc(swaggerUiOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.listen(port);
 console.log(`app is live on port ${port}`);
+export default app;

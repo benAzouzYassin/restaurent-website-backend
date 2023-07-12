@@ -1,11 +1,13 @@
-import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { OrderModel } from "../models/order";
 import { HttpExpectation } from "../http expectations/HttpExpectations";
 
 export const getPending = asyncHandler(async (req, res) => {
   try {
-    const pending = await OrderModel.find({ orderState: "pending" });
+    const pending = await OrderModel.find({ orderState: "pending" }).populate([
+      "item",
+      "user",
+    ]);
     res.send(pending);
   } catch (error) {
     throw new HttpExpectation(res, "NOT_FOUND", error.message);
@@ -42,7 +44,10 @@ export const confirmOrder = asyncHandler(async (req, res) => {
 
 export const getDoneOrders = asyncHandler(async (req, res) => {
   try {
-    const orders = await OrderModel.find({ orderState: "done" });
+    const orders = await OrderModel.find({ orderState: "done" }).populate([
+      "user",
+      "item",
+    ]);
     res.send(orders);
   } catch (error) {
     throw new HttpExpectation(res, "NOT_FOUND", error.message);
@@ -51,7 +56,10 @@ export const getDoneOrders = asyncHandler(async (req, res) => {
 
 export const getCanceledOrders = asyncHandler(async (req, res) => {
   try {
-    const orders = await OrderModel.find({ orderState: "canceled" });
+    const orders = await OrderModel.find({ orderState: "canceled" }).populate([
+      "user",
+      "item",
+    ]);
     res.send(orders);
   } catch (error) {
     throw new HttpExpectation(res, "NOT_FOUND", error.message);

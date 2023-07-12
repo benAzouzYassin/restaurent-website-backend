@@ -68,7 +68,6 @@ async function validateBody(req: Request) {
 
 export const updateState = asyncHandler(async (req, res) => {
   const { body } = req;
-  // console.log("this the body ", req.body);
   if (!body.orderId || !isValidObjectId(body.orderId)) {
     throw new HttpExpectation(res, "BAD_REQUEST", "non valid orderId");
   }
@@ -88,7 +87,7 @@ export const updateState = asyncHandler(async (req, res) => {
     const updated = await OrderModel.findByIdAndUpdate(body.orderId, {
       orderState: body.newState,
     });
-    res.send({ success: true, message: "updated succesfully", p: updated });
+    res.send({ success: true, message: "updated successfully", p: updated });
   } catch (error) {
     throw new HttpExpectation(res, "INTERNAL_SERVER_ERROR", error.message);
   }
@@ -98,7 +97,7 @@ export const userOrders = asyncHandler(async (req, res) => {
   try {
     const userOrders = await OrderModel.find({
       user: req["user"].id,
-      orderState: "pending" || "canceled",
+      $or: [{ orderState: "pending" }, { orderState: "canceled" }],
     }).populate("item");
     res.send(userOrders);
   } catch (err) {
