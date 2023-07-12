@@ -16,7 +16,7 @@ const port = 3000;
 //configs
 app.use(bodyParser.json());
 app.use(cors());
-app.use("/uploads", express.static("uploads"));
+app.use("/public", express.static("public"));
 dbConnect();
 
 app.get("/", async (req, res) => {
