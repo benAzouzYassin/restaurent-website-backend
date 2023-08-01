@@ -33,7 +33,7 @@ export const createItem = asyncHandler(async (req: Request, res: Response) => {
   const { isAvailable, price, rating, imgLink, itemName } = req.body;
   try {
     const imgUrl =
-      "http://" +
+     
       req.body.imgLink
         .split("")
         .map((char: string) => {
